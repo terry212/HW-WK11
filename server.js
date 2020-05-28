@@ -10,13 +10,35 @@ var PORT = process.env.PORT || 8080;
 // Sets up the Express app to handle data parsing
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-// API Routes
-// =============================================================
-app.get("/api/notes", function (req, res) {
-    res.json(JSON.parse(fs.readFileSync(__dirname + "/db/db.json", function (err, data) {
+// Setup reusable code
+function getNotes() {
+    return JSON.parse(fs.readFileSync(__dirname + "/db/db.json", function (err, data) {
         if (err) throw err;
         return data;
-    })));
+    }));
+}
+function setNotes(writtenNote) {
+    fs.writeFileSync(__dirname + "/db/db.json", JSON.stringify(writtenNote), function (err) {
+        if (err) throw err;
+    });
+}
+// API Routes
+// =============================================================
+// Read db and return notes
+app.get("/api/notes", function (req, res) {
+    res.json(getNotes());
+});
+// Receive new note on req.body, add to db, and ret to client
+app.post("/api/notes", function (req, res) {
+    var newNote = req.body;
+    var notes = getNotes();
+    console.log(newNote);
+    console.log(notes);
+    // appends to the top of the array
+    notes.unshift(0);
+    notes.push(newNote);
+    setNotes(newNote);
+    return res.json(newNote);
 });
 // HTML Routes
 // =============================================================
