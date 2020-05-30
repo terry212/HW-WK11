@@ -29,11 +29,17 @@ app.get("/api/notes", function (req, res) {
     res.json(getNotes());
 });
 // Receive new note on req.body, add to db, and ret to client
+// assign unique id to each note
 app.post("/api/notes", function (req, res) {
     var newNote = req.body;
     var notes = getNotes();
     console.log(newNote);
     notes.push(newNote);
+    notes.forEach(noteId => {
+        var random = Math.floor(Math.random() * 1000) + 1;
+        console.log(random);
+        noteId.id = random;
+    });
     setNotes(notes);
     res.json(newNote);
 });
