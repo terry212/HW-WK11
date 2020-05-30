@@ -33,12 +33,13 @@ app.post("/api/notes", function (req, res) {
     var newNote = req.body;
     var notes = getNotes();
     console.log(newNote);
-    console.log(notes);
-    // appends to the top of the array
-    notes.unshift(0);
     notes.push(newNote);
-    setNotes(newNote);
-    return res.json(newNote);
+    setNotes(notes);
+    res.json(newNote);
+});
+// Delete by unique note id
+app.delete("/api/notes/:id", function (req, res) {
+
 });
 // HTML Routes
 // =============================================================
