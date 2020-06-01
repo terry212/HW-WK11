@@ -10,7 +10,7 @@ var PORT = process.env.PORT || 8080;
 // Sets up the Express app to handle data parsing
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-// Setup reusable code
+// Function codes
 function getNotes() {
     return JSON.parse(fs.readFileSync(__dirname + "/db/db.json", function (err, data) {
         if (err) throw err;
@@ -20,6 +20,11 @@ function getNotes() {
 function setNotes(writtenNote) {
     fs.writeFileSync(__dirname + "/db/db.json", JSON.stringify(writtenNote), function (err) {
         if (err) throw err;
+    });
+}
+function arrayRemove(arr, value) {
+    return arr.filter(function (ele) {
+        return ele != value;
     });
 }
 // API Routes
@@ -45,7 +50,17 @@ app.post("/api/notes", function (req, res) {
 });
 // Delete by unique note id
 app.delete("/api/notes/:id", function (req, res) {
-
+    var deleteById = req.params.id;
+    var notes = getNotes();
+    var value = [];
+    // Grabs id, searches array, return array element that needs deletion
+    for (let i = 0; i < notes.length; i++) {
+        if (notes[i].id == deleteById) { value = notes[i]; }
+    }
+    var result = arrayRemove(notes, value);
+    // write results of deletion
+    setNotes(result);
+    res.json(notes);
 });
 // HTML Routes
 // =============================================================
